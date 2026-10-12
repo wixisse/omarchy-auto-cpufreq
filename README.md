@@ -5,6 +5,8 @@
 Battery, [auto-cpufreq](https://github.com/AdnanHodzic/auto-cpufreq) power state,
 and CPU power tuning from the Omarchy bar.
 
+![Auto CPU Freq bar widget](preview.png)
+
 A clone of the built-in `omarchy.power` widget (battery hero, progress bar and
 stats) whose power section drives **auto-cpufreq** instead of
 power-profiles-daemon. Pick the governor override (Auto / Saver / Perf) and the
@@ -30,12 +32,15 @@ topics too. This is a community discovery convention, not marketplace approval.
   `extras/install-privilege.sh`. Without it the plugin still works but mode/turbo
   changes fall back to a `pkexec` prompt.
 - Do **not** run auto-cpufreq alongside TLP or power-profiles-daemon; they fight
-  over the same CPU knobs.
+  over the same CPU knobs. `extras/install-daemon.sh` disables and masks
+  power-profiles-daemon for you.
 
 ## Installation
 
+Install the plugin from this repository:
+
 ```bash
-omarchy plugin add https://github.com/OWNER/REPOSITORY.git --enable
+omarchy plugin add https://github.com/wixisse/omarchy-auto-cpufreq.git --enable
 ```
 
 For a local checkout:
@@ -51,8 +56,17 @@ a terminal):
 bash extras/install.sh
 ```
 
-`extras/install.sh` is idempotent: it installs auto-cpufreq, enables
-`auto-cpufreq.service`, and installs the privileged helper.
+`extras/install.sh` is idempotent. It runs `extras/install-daemon.sh`, which
+installs the `auto-cpufreq` package, **disables and masks
+`power-profiles-daemon`** (it and auto-cpufreq both manage CPU power and must not
+run together), and enables `auto-cpufreq.service`. It then installs the
+privileged helper (`extras/install-privilege.sh`) used for mode/turbo changes.
+
+To install only the daemon, without the privileged helper:
+
+```bash
+bash extras/install-daemon.sh
+```
 
 ## Validation and tests
 
@@ -71,7 +85,7 @@ omarchy plugin update othmane-wadi.autocpufreq
 
 ```bash
 omarchy plugin remove othmane-wadi.autocpufreq
-sudo bash extras/install.sh --uninstall   # only removes the helper if present
+sudo bash extras/install-privilege.sh --uninstall
 ```
 
 ## Security
