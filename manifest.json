@@ -17,7 +17,7 @@
   "barWidget": {
     "displayName": "Auto CPU Freq",
     "description": "Battery, auto-cpufreq power state, and CPU power tuning from the Omarchy bar.",
-    "category": "Other",
+    "category": "System",
     "allowMultiple": false,
     "defaultSection": "right",
     "defaults": {},
