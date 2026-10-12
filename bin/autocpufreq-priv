@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Auto CPU Freq — privileged actions.
+#
+# extras/install-privilege.sh installs a copy of this file to
+# /usr/local/bin/autocpufreq-priv (root:root, 0755) and whitelists THAT path in
+# /etc/sudoers.d/autocpufreq. Every branch maps a fixed verb to one fixed
+# auto-cpufreq invocation; no caller-supplied string is ever passed through a
+# shell or used to build a path.
+set -euo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+case "${1:-}" in
+  force)
+    case "${2:-}" in
+      powersave | performance | reset) ;;
+      *)
+        echo "autocpufreq-priv: bad force argument" >&2
+        exit 2
+        ;;
+    esac
+    exec auto-cpufreq --force="$2"
+    ;;
+
+  turbo)
+    case "${2:-}" in
+      always | auto | never) ;;
+      *)
+        echo "autocpufreq-priv: bad turbo argument" >&2
+        exit 2
+        ;;
+    esac
+    exec auto-cpufreq --turbo="$2"
+    ;;
+
+  *)
+    echo "autocpufreq-priv: unknown action: ${1:-}" >&2
+    exit 2
+    ;;
+esac

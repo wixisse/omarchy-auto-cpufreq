@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "othmane-wadi.autocpufreq",
+  "name": "Auto CPU Freq",
+  "version": "0.1.0",
+  "author": "othmane-wadi",
+  "license": "MIT",
+  "description": "Battery, auto-cpufreq power state, and CPU power tuning from the Omarchy bar.",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Auto CPU Freq",
+    "description": "Battery, auto-cpufreq power state, and CPU power tuning from the Omarchy bar.",
+    "category": "Other",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {},
+    "schema": []
+  }
+}

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Auto CPU Freq — action dispatcher. Performs the requested auto-cpufreq change
+# (elevating through the whitelisted /usr/local/bin/autocpufreq-priv helper) and
+# then prints a fresh status blob so the panel refreshes in one round trip.
+#
+#   autocpufreq-action mode  auto|saver|performance
+#   autocpufreq-action turbo auto|always|never
+#   autocpufreq-action stats      (opens sudo auto-cpufreq --stats in a terminal)
+#   autocpufreq-action gui        (opens the auto-cpufreq GTK interface)
+#   autocpufreq-action monitor    (opens sudo auto-cpufreq --monitor in a terminal)
+set -uo pipefail
+export LC_ALL=C
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+verb=${1:-}
+arg=${2:-}
+
+priv() {
+  if sudo -n /usr/local/bin/autocpufreq-priv "$@" >/dev/null 2>&1; then return 0; fi
+  if command -v pkexec >/dev/null 2>&1; then
+    pkexec /usr/local/bin/autocpufreq-priv "$@" >/dev/null 2>&1
+    return $?
+  fi
+  return 1
+}
+
+term() { setsid omarchy-launch-floating-terminal-with-presentation "$@" >/dev/null 2>&1 & }
+
+case "$verb" in
+  mode)
+    case "$arg" in
+      auto) priv force reset || exit 1 ;;
+      saver | powersave) priv force powersave || exit 1 ;;
+      performance | perf) priv force performance || exit 1 ;;
+      *) exit 2 ;;
+    esac
+    ;;
+  turbo)
+    case "$arg" in
+      auto) priv turbo auto || exit 1 ;;
+      always) priv turbo always || exit 1 ;;
+      never) priv turbo never || exit 1 ;;
+      *) exit 2 ;;
+    esac
+    ;;
+  stats)
+    term "sudo auto-cpufreq --stats"
+    exit 0
+    ;;
+  gui)
+    term "auto-cpufreq-gtk"
+    exit 0
+    ;;
+  monitor)
+    term "sudo auto-cpufreq --monitor"
+    exit 0
+    ;;
+esac
+
+exec "$DIR/autocpufreq-status"
